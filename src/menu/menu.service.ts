@@ -38,7 +38,7 @@ export class MenuService {
     });
     if (!restaurant) throw new NotFoundException("restaurant not found");
 
-    const [categories, items] = await Promise.all([
+    const [categories, items, tables] = await Promise.all([
       this.prisma.category.findMany({
         where: { companyId: restaurant.company.id, isActive: true },
         orderBy: { sortOrder: "asc" },
@@ -59,12 +59,18 @@ export class MenuService {
           sortOrder: true,
         },
       }),
+      this.prisma.table.findMany({
+        where: { restaurantId: restaurant.id, isActive: true },
+        orderBy: { number: "asc" },
+        select: { id: true, number: true, capacity: true, zone: true, translations: true, imageUrl: true },
+      }),
     ]);
 
     return {
       restaurant,
       categories,
       items: items.map((i) => ({ ...i, price: Number(i.price) })),
+      tables,
     };
   }
 }
