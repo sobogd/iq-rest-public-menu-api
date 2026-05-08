@@ -26,6 +26,9 @@ export class MenuService {
         reservationsEnabled: true,
         ordersEnabled: true,
         orderMode: true,
+        orderNameEnabled: true,
+        orderPhoneEnabled: true,
+        orderAddressEnabled: true,
         x: true,
         y: true,
         company: {
