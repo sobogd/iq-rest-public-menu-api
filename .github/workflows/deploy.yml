@@ -72,5 +72,5 @@ jobs:
             cd /home/deploy/apps/iq-rest-public-menu-api
             npm ci --omit=dev --legacy-peer-deps
             npx prisma generate
-            pm2 restart public-menu-api --update-env || pm2 start dist/src/main.js --name public-menu-api --time --update-env
+            pm2 restart public-menu-api --update-env || pm2 start dist/main.js --name public-menu-api --time --update-env
             pm2 save
