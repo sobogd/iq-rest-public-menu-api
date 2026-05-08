@@ -18,14 +18,26 @@ async function bootstrap() {
   );
   app.use(cookieParser());
 
-  const corsOrigins = (config.get<string>("CORS_ORIGINS") || "")
+  // Allow every <slug>.iq-rest.com (and the apex), plus any explicit origins
+  // listed in CORS_ORIGINS (comma-separated, e.g. local dev URLs). Custom
+  // domains in the future can be added by extending CORS_PATTERN.
+  const explicitOrigins = (config.get<string>("CORS_ORIGINS") || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
+  const pattern = new RegExp(
+    config.get<string>("CORS_PATTERN") || "^https?://([a-z0-9-]+\\.)?iq-rest\\.com(:\\d+)?$",
+    "i",
+  );
 
   app.enableCors({
-    origin: corsOrigins.length ? corsOrigins : true,
     credentials: true,
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true); // server-to-server / curl
+      if (explicitOrigins.includes(origin)) return cb(null, true);
+      if (pattern.test(origin)) return cb(null, true);
+      return cb(new Error(`CORS: origin ${origin} not allowed`), false);
+    },
   });
 
   app.useGlobalPipes(

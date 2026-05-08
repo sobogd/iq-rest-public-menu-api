@@ -43,11 +43,12 @@ jobs:
           ENV_NODE_ENV: ${{ secrets.NODE_ENV }}
           ENV_DATABASE_URL: ${{ secrets.DATABASE_URL }}
           ENV_CORS_ORIGINS: ${{ secrets.CORS_ORIGINS }}
+          ENV_CORS_PATTERN: ${{ secrets.CORS_PATTERN }}
         with:
           host: ${{ secrets.SERVER_IP }}
           username: deployer
           key: ${{ secrets.SSH_KEY }}
-          envs: ENV_PORT,ENV_NODE_ENV,ENV_DATABASE_URL,ENV_CORS_ORIGINS
+          envs: ENV_PORT,ENV_NODE_ENV,ENV_DATABASE_URL,ENV_CORS_ORIGINS,ENV_CORS_PATTERN
           script: |
             set -e
             mkdir -p /home/deploy/apps/iq-rest-public-menu-api
@@ -56,6 +57,7 @@ jobs:
             NODE_ENV=$ENV_NODE_ENV
             DATABASE_URL=$ENV_DATABASE_URL
             CORS_ORIGINS=$ENV_CORS_ORIGINS
+            CORS_PATTERN=$ENV_CORS_PATTERN
             EOF
             chmod 600 /home/deploy/apps/iq-rest-public-menu-api/.env
 
