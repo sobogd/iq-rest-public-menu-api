@@ -96,7 +96,7 @@ export class MailService implements OnModuleDestroy {
   }
 
   private dashboardUrl(p: string) {
-    const base = (this.config.get<string>("DASHBOARD_URL") || "https://iq-rest.com").replace(/\/$/, "");
+    const base = (this.config.get<string>("DASHBOARD_URL") || "https://dashboard.iq-rest.com").replace(/\/$/, "");
     return base + p;
   }
 
