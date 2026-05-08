@@ -1,0 +1,19 @@
+{
+  "guestSubject": "{restaurant}でのご予約",
+  "guestGreeting": "{name}様",
+  "guestConfirmed": "ご予約が確認されました！",
+  "guestPending": "ご予約リクエストを受け付けました。確認をお待ちください。",
+  "details": "予約詳細：",
+  "date": "日付",
+  "time": "時間",
+  "guests": "人数",
+  "table": "テーブル",
+  "notes": "備考",
+  "guestOutro": "変更が必要な場合は、レストランに直接お問い合わせください。",
+  "signature": "敬具<br>{restaurant}",
+  "ownerSubject": "{name}様からの新しい予約",
+  "ownerGreeting": "新しい予約！",
+  "ownerBody": "レストランに新しい予約が入りました。",
+  "ownerCta": "予約を確認",
+  "ownerSignature": "敬具<br>IQ Rest チーム"
+}

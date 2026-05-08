@@ -1,0 +1,19 @@
+{
+  "guestSubject": "{restaurant} 예약 확인",
+  "guestGreeting": "안녕하세요 {name}님,",
+  "guestConfirmed": "예약이 확정되었습니다!",
+  "guestPending": "예약 요청이 접수되었으며 확인을 기다리고 있습니다.",
+  "details": "예약 상세 정보:",
+  "date": "날짜",
+  "time": "시간",
+  "guests": "인원",
+  "table": "테이블",
+  "notes": "메모",
+  "guestOutro": "변경이 필요하시면 레스토랑에 직접 연락해 주세요.",
+  "signature": "감사합니다,<br>{restaurant}",
+  "ownerSubject": "{name}님의 새 예약",
+  "ownerGreeting": "새 예약!",
+  "ownerBody": "레스토랑에 새로운 예약이 접수되었습니다.",
+  "ownerCta": "예약 확인하기",
+  "ownerSignature": "감사합니다,<br>IQ Rest 팀"
+}

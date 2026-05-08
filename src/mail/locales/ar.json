@@ -1,0 +1,19 @@
+{
+  "guestSubject": "حجزك في {restaurant}",
+  "guestGreeting": "مرحباً {name}،",
+  "guestConfirmed": "تم تأكيد حجزك!",
+  "guestPending": "تم استلام طلب الحجز الخاص بك وهو في انتظار التأكيد.",
+  "details": "تفاصيل الحجز:",
+  "date": "التاريخ",
+  "time": "الوقت",
+  "guests": "الضيوف",
+  "table": "الطاولة",
+  "notes": "ملاحظات",
+  "guestOutro": "إذا كنت بحاجة لإجراء أي تغييرات، يرجى التواصل مع المطعم مباشرة.",
+  "signature": "مع أطيب التحيات،<br>{restaurant}",
+  "ownerSubject": "حجز جديد من {name}",
+  "ownerGreeting": "حجز جديد!",
+  "ownerBody": "تم إجراء حجز جديد في مطعمك.",
+  "ownerCta": "عرض الحجوزات",
+  "ownerSignature": "مع أطيب التحيات،<br>فريق IQ Rest"
+}

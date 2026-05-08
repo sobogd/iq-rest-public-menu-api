@@ -1,0 +1,19 @@
+{
+  "guestSubject": "{restaurant} rezervasyonunuz",
+  "guestGreeting": "Merhaba {name},",
+  "guestConfirmed": "Rezervasyonunuz onaylandı!",
+  "guestPending": "Rezervasyon talebiniz alındı ve onay bekliyor.",
+  "details": "Rezervasyon detayları:",
+  "date": "Tarih",
+  "time": "Saat",
+  "guests": "Misafirler",
+  "table": "Masa",
+  "notes": "Notlar",
+  "guestOutro": "Değişiklik yapmanız gerekiyorsa, lütfen doğrudan restoranla iletişime geçin.",
+  "signature": "Saygılarımızla,<br>{restaurant}",
+  "ownerSubject": "{name} adına yeni rezervasyon",
+  "ownerGreeting": "Yeni rezervasyon!",
+  "ownerBody": "Restoranınızda yeni bir rezervasyon yapıldı.",
+  "ownerCta": "Rezervasyonları görüntüle",
+  "ownerSignature": "Saygılarımızla,<br>IQ Rest Ekibi"
+}

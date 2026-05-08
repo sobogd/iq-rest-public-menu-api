@@ -1,0 +1,19 @@
+{
+  "guestSubject": "Jūsų rezervacija restorane {restaurant}",
+  "guestGreeting": "Sveiki {name},",
+  "guestConfirmed": "Jūsų rezervacija patvirtinta!",
+  "guestPending": "Jūsų rezervacijos užklausa gauta ir laukia patvirtinimo.",
+  "details": "Rezervacijos informacija:",
+  "date": "Data",
+  "time": "Laikas",
+  "guests": "Svečiai",
+  "table": "Stalas",
+  "notes": "Pastabos",
+  "guestOutro": "Jei reikia atlikti pakeitimus, susisiekite tiesiogiai su restoranu.",
+  "signature": "Pagarbiai,<br>{restaurant}",
+  "ownerSubject": "Nauja rezervacija nuo {name}",
+  "ownerGreeting": "Nauja rezervacija!",
+  "ownerBody": "Jūsų restorane atlikta nauja rezervacija.",
+  "ownerCta": "Peržiūrėti rezervacijas",
+  "ownerSignature": "Pagarbiai,<br>IQ Rest komanda"
+}

@@ -1,0 +1,19 @@
+{
+  "guestSubject": "D'áirithint ag {restaurant}",
+  "guestGreeting": "Dia duit {name},",
+  "guestConfirmed": "Tá d'áirithint deimhnithe!",
+  "guestPending": "Fuarthas d'iarratas áirithinte agus tá sé ag fanacht le deimhniú.",
+  "details": "Sonraí na háirithinte:",
+  "date": "Dáta",
+  "time": "Am",
+  "guests": "Aíonna",
+  "table": "Tábla",
+  "notes": "Nótaí",
+  "guestOutro": "Má theastaíonn uait athruithe a dhéanamh, déan teagmháil leis an mbialann go díreach.",
+  "signature": "Le meas,<br>{restaurant}",
+  "ownerSubject": "Áirithint nua ó {name}",
+  "ownerGreeting": "Áirithint nua!",
+  "ownerBody": "Rinneadh áirithint nua i do bhialann.",
+  "ownerCta": "Féach ar áirithintí",
+  "ownerSignature": "Le meas,<br>Foireann IQ Rest"
+}

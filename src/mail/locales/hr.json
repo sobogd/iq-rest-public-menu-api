@@ -1,0 +1,19 @@
+{
+  "guestSubject": "Vaša rezervacija u {restaurant}",
+  "guestGreeting": "Pozdrav {name},",
+  "guestConfirmed": "Vaša rezervacija je potvrđena!",
+  "guestPending": "Vaš zahtjev za rezervaciju je zaprimljen i čeka potvrdu.",
+  "details": "Detalji rezervacije:",
+  "date": "Datum",
+  "time": "Vrijeme",
+  "guests": "Gosti",
+  "table": "Stol",
+  "notes": "Napomene",
+  "guestOutro": "Ako trebate napraviti promjene, molimo kontaktirajte restoran izravno.",
+  "signature": "S poštovanjem,<br>{restaurant}",
+  "ownerSubject": "Nova rezervacija od {name}",
+  "ownerGreeting": "Nova rezervacija!",
+  "ownerBody": "Nova rezervacija je napravljena u vašem restoranu.",
+  "ownerCta": "Pregledaj rezervacije",
+  "ownerSignature": "S poštovanjem,<br>IQ Rest Tim"
+}

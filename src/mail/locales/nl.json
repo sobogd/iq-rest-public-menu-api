@@ -1,0 +1,19 @@
+{
+  "guestSubject": "Uw reservering bij {restaurant}",
+  "guestGreeting": "Hallo {name},",
+  "guestConfirmed": "Uw reservering is bevestigd!",
+  "guestPending": "Uw reserveringsverzoek is ontvangen en wacht op bevestiging.",
+  "details": "Reserveringsgegevens:",
+  "date": "Datum",
+  "time": "Tijd",
+  "guests": "Gasten",
+  "table": "Tafel",
+  "notes": "Opmerkingen",
+  "guestOutro": "Als u wijzigingen wilt aanbrengen, neem dan rechtstreeks contact op met het restaurant.",
+  "signature": "Met vriendelijke groet,<br>{restaurant}",
+  "ownerSubject": "Nieuwe reservering van {name}",
+  "ownerGreeting": "Nieuwe reservering!",
+  "ownerBody": "Er is een nieuwe reservering gemaakt in uw restaurant.",
+  "ownerCta": "Reserveringen bekijken",
+  "ownerSignature": "Met vriendelijke groet,<br>IQ Rest Team"
+}

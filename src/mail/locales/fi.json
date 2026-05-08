@@ -1,0 +1,19 @@
+{
+  "guestSubject": "Varauksesi ravintolassa {restaurant}",
+  "guestGreeting": "Hei {name},",
+  "guestConfirmed": "Varauksesi on vahvistettu!",
+  "guestPending": "Varauspyyntösi on vastaanotettu ja odottaa vahvistusta.",
+  "details": "Varauksen tiedot:",
+  "date": "Päivämäärä",
+  "time": "Aika",
+  "guests": "Vieraat",
+  "table": "Pöytä",
+  "notes": "Huomautukset",
+  "guestOutro": "Jos sinun täytyy tehdä muutoksia, ota yhteyttä suoraan ravintolaan.",
+  "signature": "Ystävällisin terveisin,<br>{restaurant}",
+  "ownerSubject": "Uusi varaus henkilöltä {name}",
+  "ownerGreeting": "Uusi varaus!",
+  "ownerBody": "Ravintolaasi on tehty uusi varaus.",
+  "ownerCta": "Näytä varaukset",
+  "ownerSignature": "Ystävällisin terveisin,<br>IQ Rest Team"
+}

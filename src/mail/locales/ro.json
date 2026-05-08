@@ -1,0 +1,19 @@
+{
+  "guestSubject": "Rezervarea dumneavoastră la {restaurant}",
+  "guestGreeting": "Bună {name},",
+  "guestConfirmed": "Rezervarea dumneavoastră este confirmată!",
+  "guestPending": "Cererea dumneavoastră de rezervare a fost primită și așteaptă confirmare.",
+  "details": "Detalii rezervare:",
+  "date": "Data",
+  "time": "Ora",
+  "guests": "Oaspeți",
+  "table": "Masă",
+  "notes": "Note",
+  "guestOutro": "Dacă trebuie să faceți modificări, vă rugăm să contactați direct restaurantul.",
+  "signature": "Cu stimă,<br>{restaurant}",
+  "ownerSubject": "Rezervare nouă de la {name}",
+  "ownerGreeting": "Rezervare nouă!",
+  "ownerBody": "O nouă rezervare a fost făcută la restaurantul dumneavoastră.",
+  "ownerCta": "Vezi rezervările",
+  "ownerSignature": "Cu stimă,<br>Echipa IQ Rest"
+}

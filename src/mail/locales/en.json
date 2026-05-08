@@ -1,0 +1,19 @@
+{
+  "guestSubject": "Your reservation at {restaurant}",
+  "guestGreeting": "Hi {name},",
+  "guestConfirmed": "Your reservation is confirmed!",
+  "guestPending": "Your reservation request has been received and is awaiting confirmation.",
+  "details": "Reservation details:",
+  "date": "Date",
+  "time": "Time",
+  "guests": "Guests",
+  "table": "Table",
+  "notes": "Notes",
+  "guestOutro": "If you need to make any changes, please contact the restaurant directly.",
+  "signature": "Best regards,<br>{restaurant}",
+  "ownerSubject": "New reservation from {name}",
+  "ownerGreeting": "New reservation!",
+  "ownerBody": "A new reservation has been made at your restaurant.",
+  "ownerCta": "View Reservations",
+  "ownerSignature": "Best regards,<br>IQ Rest Team"
+}

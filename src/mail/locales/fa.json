@@ -1,0 +1,19 @@
+{
+  "guestSubject": "رزرو شما در {restaurant}",
+  "guestGreeting": "سلام {name}،",
+  "guestConfirmed": "رزرو شما تأیید شد!",
+  "guestPending": "درخواست رزرو شما دریافت شده و در انتظار تأیید است.",
+  "details": "جزئیات رزرو:",
+  "date": "تاریخ",
+  "time": "ساعت",
+  "guests": "مهمانان",
+  "table": "میز",
+  "notes": "یادداشت‌ها",
+  "guestOutro": "اگر نیاز به تغییر دارید، لطفاً مستقیماً با رستوران تماس بگیرید.",
+  "signature": "با احترام،<br>{restaurant}",
+  "ownerSubject": "رزرو جدید از {name}",
+  "ownerGreeting": "رزرو جدید!",
+  "ownerBody": "رزرو جدیدی در رستوران شما انجام شده است.",
+  "ownerCta": "مشاهده رزروها",
+  "ownerSignature": "با احترام،<br>تیم IQ Rest"
+}

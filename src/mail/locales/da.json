@@ -1,0 +1,19 @@
+{
+  "guestSubject": "Din reservation på {restaurant}",
+  "guestGreeting": "Hej {name},",
+  "guestConfirmed": "Din reservation er bekræftet!",
+  "guestPending": "Din reservationsanmodning er modtaget og afventer bekræftelse.",
+  "details": "Reservationsdetaljer:",
+  "date": "Dato",
+  "time": "Tidspunkt",
+  "guests": "Gæster",
+  "table": "Bord",
+  "notes": "Bemærkninger",
+  "guestOutro": "Hvis du har brug for at foretage ændringer, bedes du kontakte restauranten direkte.",
+  "signature": "Med venlig hilsen,<br>{restaurant}",
+  "ownerSubject": "Ny reservation fra {name}",
+  "ownerGreeting": "Ny reservation!",
+  "ownerBody": "En ny reservation er foretaget på din restaurant.",
+  "ownerCta": "Se reservationer",
+  "ownerSignature": "Med venlig hilsen,<br>IQ Rest Team"
+}

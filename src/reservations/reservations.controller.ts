@@ -1,6 +1,7 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Post, Query } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Logger, NotFoundException, Post, Query } from "@nestjs/common";
 import { z } from "zod";
 import { PrismaService } from "../prisma/prisma.service";
+import { MailService } from "../mail/mail.service";
 
 const reservationSchema = z.object({
   restaurantId: z.string().min(1),
@@ -75,7 +76,8 @@ function getScheduleDay(
 
 @Controller("public/reservations")
 export class ReservationsController {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(ReservationsController.name);
+  constructor(private readonly prisma: PrismaService, private readonly mail: MailService) {}
 
   @Get("availability")
   async availability(
@@ -164,11 +166,23 @@ export class ReservationsController {
   async create(@Body() body: unknown) {
     const parsed = reservationSchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException(parsed.error.issues[0]?.message || "invalid input");
-    const { restaurantId, tableId, date, startTime, guestName, guestEmail, guestPhone, guestsCount, notes } = parsed.data;
+    const { restaurantId, tableId, date, startTime, guestName, guestEmail, guestPhone, guestsCount, notes, locale, isPreview } = parsed.data;
 
     const restaurant = await this.prisma.restaurant.findUnique({
       where: { id: restaurantId },
-      select: { id: true, reservationsEnabled: true, reservationSlotMinutes: true, reservationMode: true },
+      select: {
+        id: true,
+        title: true,
+        defaultLanguage: true,
+        reservationsEnabled: true,
+        reservationSlotMinutes: true,
+        reservationMode: true,
+        company: {
+          select: {
+            users: { select: { user: { select: { email: true } } } },
+          },
+        },
+      },
     });
     if (!restaurant) throw new NotFoundException("not_found");
     if (!restaurant.reservationsEnabled) throw new BadRequestException("reservations_disabled");
@@ -179,7 +193,7 @@ export class ReservationsController {
 
     const tables = await this.prisma.table.findMany({
       where: { restaurantId, isActive: true, capacity: { gte: guestsCount } },
-      select: { id: true, capacity: true },
+      select: { id: true, number: true, capacity: true },
     });
 
     const existing = await this.prisma.reservation.findMany({
@@ -215,6 +229,38 @@ export class ReservationsController {
         status,
       },
     });
+
+    if (!isPreview) {
+      const tableNumber = tables.find((t) => t.id === chosenTableId)?.number ?? 0;
+      const ownerEmails = restaurant.company.users
+        .map((u) => u.user.email)
+        .filter((e): e is string => !!e);
+      const lang = locale || restaurant.defaultLanguage || "en";
+      const baseParams = {
+        restaurantTitle: restaurant.title,
+        date,
+        startTime,
+        guestsCount,
+        tableNumber,
+        notes: notes || null,
+        status,
+        locale: lang,
+      };
+      this.mail
+        .sendGuestEmail({ ...baseParams, email: guestEmail, guestName })
+        .catch((err) => this.logger.warn(`guest email failed: ${err?.message || err}`));
+      if (ownerEmails.length > 0) {
+        this.mail
+          .sendOwnerEmail({
+            ...baseParams,
+            guestName,
+            ownerEmails,
+            guestEmail,
+            guestPhone: guestPhone || null,
+          })
+          .catch((err) => this.logger.warn(`owner email failed: ${err?.message || err}`));
+      }
+    }
 
     return reservation;
   }

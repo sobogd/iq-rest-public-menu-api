@@ -1,0 +1,19 @@
+{
+  "guestSubject": "Bókunin þín á {restaurant}",
+  "guestGreeting": "Hæ {name},",
+  "guestConfirmed": "Bókunin þín er staðfest!",
+  "guestPending": "Bókunarbeiðni þín hefur verið móttekin og bíður staðfestingar.",
+  "details": "Upplýsingar um bókun:",
+  "date": "Dagsetning",
+  "time": "Tími",
+  "guests": "Gestir",
+  "table": "Borð",
+  "notes": "Athugasemdir",
+  "guestOutro": "Ef þú þarft að gera breytingar, vinsamlegast hafðu samband beint við veitingastaðinn.",
+  "signature": "Bestu kveðjur,<br>{restaurant}",
+  "ownerSubject": "Ný bókun frá {name}",
+  "ownerGreeting": "Ný bókun!",
+  "ownerBody": "Ný bókun hefur verið gerð á veitingastaðnum þínum.",
+  "ownerCta": "Skoða bókanir",
+  "ownerSignature": "Bestu kveðjur,<br>IQ Rest teymið"
+}

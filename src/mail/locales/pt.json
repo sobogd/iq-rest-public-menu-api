@@ -1,0 +1,19 @@
+{
+  "guestSubject": "A sua reserva no {restaurant}",
+  "guestGreeting": "Olá {name},",
+  "guestConfirmed": "A sua reserva está confirmada!",
+  "guestPending": "O seu pedido de reserva foi recebido e aguarda confirmação.",
+  "details": "Detalhes da reserva:",
+  "date": "Data",
+  "time": "Hora",
+  "guests": "Convidados",
+  "table": "Mesa",
+  "notes": "Notas",
+  "guestOutro": "Se precisar de fazer alguma alteração, por favor contacte diretamente o restaurante.",
+  "signature": "Com os melhores cumprimentos,<br>{restaurant}",
+  "ownerSubject": "Nova reserva de {name}",
+  "ownerGreeting": "Nova reserva!",
+  "ownerBody": "Uma nova reserva foi feita no seu restaurante.",
+  "ownerCta": "Ver reservas",
+  "ownerSignature": "Com os melhores cumprimentos,<br>Equipe IQ Rest"
+}

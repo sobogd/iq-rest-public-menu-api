@@ -1,0 +1,19 @@
+{
+  "guestSubject": "Jūsu rezervācija restorānā {restaurant}",
+  "guestGreeting": "Sveiki {name},",
+  "guestConfirmed": "Jūsu rezervācija ir apstiprināta!",
+  "guestPending": "Jūsu rezervācijas pieprasījums ir saņemts un gaida apstiprinājumu.",
+  "details": "Rezervācijas informācija:",
+  "date": "Datums",
+  "time": "Laiks",
+  "guests": "Viesi",
+  "table": "Galds",
+  "notes": "Piezīmes",
+  "guestOutro": "Ja jums ir nepieciešams veikt izmaiņas, lūdzu, sazinieties tieši ar restorānu.",
+  "signature": "Ar cieņu,<br>{restaurant}",
+  "ownerSubject": "Jauna rezervācija no {name}",
+  "ownerGreeting": "Jauna rezervācija!",
+  "ownerBody": "Jūsu restorānā ir veikta jauna rezervācija.",
+  "ownerCta": "Skatīt rezervācijas",
+  "ownerSignature": "Ar cieņu,<br>IQ Rest komanda"
+}

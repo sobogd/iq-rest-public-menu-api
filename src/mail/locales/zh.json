@@ -1,0 +1,19 @@
+{
+  "guestSubject": "您在{restaurant}的预约",
+  "guestGreeting": "{name}您好，",
+  "guestConfirmed": "您的预约已确认！",
+  "guestPending": "您的预约请求已收到，正在等待确认。",
+  "details": "预约详情：",
+  "date": "日期",
+  "time": "时间",
+  "guests": "人数",
+  "table": "桌号",
+  "notes": "备注",
+  "guestOutro": "如需更改，请直接联系餐厅。",
+  "signature": "此致敬礼，<br>{restaurant}",
+  "ownerSubject": "来自{name}的新预约",
+  "ownerGreeting": "新预约！",
+  "ownerBody": "您的餐厅收到了一个新预约。",
+  "ownerCta": "查看预约",
+  "ownerSignature": "此致敬礼，<br>IQ Rest 团队"
+}
