@@ -1,0 +1,74 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Build
+        run: npm run build
+
+      - name: Copy artifacts to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: deployer
+          key: ${{ secrets.SSH_KEY }}
+          source: "dist/,package.json,package-lock.json,prisma/"
+          target: "/home/deploy/apps/iq-rest-public-menu-api"
+          rm: false
+          overwrite: true
+
+      - name: Write .env from secrets
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          ENV_PORT: ${{ secrets.PORT }}
+          ENV_NODE_ENV: ${{ secrets.NODE_ENV }}
+          ENV_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ENV_CORS_ORIGINS: ${{ secrets.CORS_ORIGINS }}
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: deployer
+          key: ${{ secrets.SSH_KEY }}
+          envs: ENV_PORT,ENV_NODE_ENV,ENV_DATABASE_URL,ENV_CORS_ORIGINS
+          script: |
+            set -e
+            mkdir -p /home/deploy/apps/iq-rest-public-menu-api
+            cat > /home/deploy/apps/iq-rest-public-menu-api/.env <<EOF
+            PORT=$ENV_PORT
+            NODE_ENV=$ENV_NODE_ENV
+            DATABASE_URL=$ENV_DATABASE_URL
+            CORS_ORIGINS=$ENV_CORS_ORIGINS
+            EOF
+            chmod 600 /home/deploy/apps/iq-rest-public-menu-api/.env
+
+      - name: Install runtime deps and restart
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: deployer
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            set -e
+            cd /home/deploy/apps/iq-rest-public-menu-api
+            npm ci --omit=dev --legacy-peer-deps
+            npx prisma generate
+            pm2 restart public-menu-api --update-env || pm2 start dist/src/main.js --name public-menu-api --time --update-env
+            pm2 save
