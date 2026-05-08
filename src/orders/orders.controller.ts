@@ -5,17 +5,10 @@ import { PrismaService } from "../prisma/prisma.service";
 
 const orderSchema = z.object({
   slug: z.string().min(1),
-  items: z
-    .array(
-      z.object({
-        id: z.string(),
-        name: z.string(),
-        qty: z.number().int().min(1).max(999),
-        price: z.number().min(0).max(99999.99),
-      }),
-    )
-    .max(100)
-    .optional(),
+  // Items are stored as JSON; the dashboard expects per-unit rows with
+  // dish snapshot + per-item kitchen status. We accept any shape and let
+  // the client (public-menu OrderForm) build the canonical payload.
+  items: z.array(z.record(z.string(), z.unknown())).max(500).optional(),
   total: z.number().min(0).max(999999.99).nullable().optional(),
   customerName: z.string().max(200).nullable().optional(),
   customerPhone: z.string().max(50).nullable().optional(),
@@ -80,7 +73,7 @@ export class OrdersController {
         data: {
           restaurantId: restaurant.id,
           companyId: restaurant.companyId,
-          items: items.map((it) => ({ id: it.id, name: it.name, qty: it.qty, price: it.price })),
+          items: items as object[],
           total: total ?? 0,
           currency: restaurant.currency,
           customerName: customerName ? String(customerName).slice(0, 200) : null,
