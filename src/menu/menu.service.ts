@@ -34,6 +34,7 @@ export class MenuService {
         orderAddressEnabled: true,
         x: true,
         y: true,
+        googlePlaceId: true,
         company: {
           select: { id: true, plan: true, subscriptionStatus: true, trialEndsAt: true },
         },

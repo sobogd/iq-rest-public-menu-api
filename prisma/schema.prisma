@@ -129,6 +129,7 @@ model Restaurant {
   address         String?
   x               String?
   y               String?
+  googlePlaceId   String?
   phone           String?
   instagram       String?
   whatsapp        String?
