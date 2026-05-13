@@ -47,6 +47,40 @@ function isTableBooked(
   return false;
 }
 
+/** Return the restaurant's current local date/time as a plain object,
+ *  independent of the Node process's TZ. Used so "is slot in the past"
+ *  checks compare against the restaurant's clock, not the server's UTC. */
+function nowInTz(tz: string): { todayStr: string; currentMinutes: number } {
+  try {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: tz,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).formatToParts(new Date());
+    const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+    const year = get("year");
+    const month = get("month");
+    const day = get("day");
+    let hour = get("hour");
+    if (hour === "24") hour = "00";
+    const minute = get("minute");
+    return {
+      todayStr: `${year}-${month}-${day}`,
+      currentMinutes: Number(hour) * 60 + Number(minute),
+    };
+  } catch {
+    const now = new Date();
+    return {
+      todayStr: `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`,
+      currentMinutes: now.getUTCHours() * 60 + now.getUTCMinutes(),
+    };
+  }
+}
+
 function getScheduleDay(
   raw: unknown,
   date: Date,
@@ -98,6 +132,7 @@ export class ReservationsController {
         workingHoursStart: true,
         workingHoursEnd: true,
         reservationSchedule: true,
+        timezone: true,
       },
     });
     if (!restaurant) throw new NotFoundException("not_found");
@@ -128,10 +163,11 @@ export class ReservationsController {
 
     const timeSlots: { time: string; available: boolean; availableTables: number }[] = [];
     if (day) {
-      const now = new Date();
-      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      // Compare "is slot in the past" against the restaurant's local clock,
+      // not the server's UTC. Italian restaurant at 19:55 (UTC+2 summer) ≠
+      // 17:55 UTC — without tz-aware now, 18:00 would still look "future".
+      const { todayStr, currentMinutes } = nowInTz(restaurant.timezone || "UTC");
       const isToday = dateStr === todayStr;
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
       for (const window of day.openWindows) {
         for (let m = window.start; m + slotDuration <= window.end; m += 30) {
           if (isToday && m <= currentMinutes) continue;
