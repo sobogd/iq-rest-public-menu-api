@@ -69,21 +69,48 @@ export class OrdersController {
 
     const mode = restaurant.orderMode;
     if ((mode === "internal" || mode === "both") && items && items.length > 0) {
-      await this.prisma.order.create({
-        data: {
-          restaurantId: restaurant.id,
-          companyId: restaurant.companyId,
-          items: items as object[],
-          total: total ?? 0,
-          currency: restaurant.currency,
-          customerName: customerName ? String(customerName).slice(0, 200) : null,
-          customerPhone: customerPhone ? String(customerPhone).slice(0, 50) : null,
-          customerAddress: customerAddress ? String(customerAddress).slice(0, 500) : null,
-          comment: comment ? String(comment).slice(0, 1000) : null,
-          tableNumber: tableNumber ?? null,
-          status: "new",
-        },
-      });
+      const orderDate = new Date();
+      orderDate.setUTCHours(0, 0, 0, 0);
+
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const last = await this.prisma.order.findFirst({
+          where: { restaurantId: restaurant.id, orderDate },
+          orderBy: { dailyNumber: "desc" },
+          select: { dailyNumber: true },
+        });
+        const dailyNumber = (last?.dailyNumber ?? 0) + 1;
+        try {
+          await this.prisma.order.create({
+            data: {
+              restaurantId: restaurant.id,
+              companyId: restaurant.companyId,
+              items: items as object[],
+              total: total ?? 0,
+              currency: restaurant.currency,
+              customerName: customerName ? String(customerName).slice(0, 200) : null,
+              customerPhone: customerPhone ? String(customerPhone).slice(0, 50) : null,
+              customerAddress: customerAddress ? String(customerAddress).slice(0, 500) : null,
+              comment: comment ? String(comment).slice(0, 1000) : null,
+              tableNumber: tableNumber ?? null,
+              status: "new",
+              orderDate,
+              dailyNumber,
+            },
+          });
+          break;
+        } catch (err: unknown) {
+          if (
+            typeof err === "object" &&
+            err !== null &&
+            "code" in err &&
+            (err as { code: string }).code === "P2002" &&
+            attempt < 4
+          ) {
+            continue;
+          }
+          throw err;
+        }
+      }
     }
 
     return { ok: true, mode };

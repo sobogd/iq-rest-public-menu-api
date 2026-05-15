@@ -375,11 +375,14 @@ model Order {
   tableNumber     Int?
   status          String   @default("new") // new | in_progress | completed | cancelled
   isExample       Boolean  @default(false)
+  orderDate       DateTime @db.Date
+  dailyNumber     Int
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
+  @@unique([restaurantId, orderDate, dailyNumber])
   @@index([companyId, status])
   @@index([companyId, createdAt])
   @@index([restaurantId, createdAt])
