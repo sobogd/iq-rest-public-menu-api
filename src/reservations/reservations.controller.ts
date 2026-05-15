@@ -14,7 +14,6 @@ const reservationSchema = z.object({
   guestsCount: z.number().int().min(1).max(50),
   notes: z.string().max(500).nullable().optional(),
   locale: z.string().min(2).max(5).optional(),
-  isPreview: z.boolean().optional(),
 });
 
 interface ScheduleDay {
@@ -202,7 +201,7 @@ export class ReservationsController {
   async create(@Body() body: unknown) {
     const parsed = reservationSchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException(parsed.error.issues[0]?.message || "invalid input");
-    const { restaurantId, tableId, date, startTime, guestName, guestEmail, guestPhone, guestsCount, notes, locale, isPreview } = parsed.data;
+    const { restaurantId, tableId, date, startTime, guestName, guestEmail, guestPhone, guestsCount, notes, locale } = parsed.data;
 
     const restaurant = await this.prisma.restaurant.findUnique({
       where: { id: restaurantId },
@@ -266,7 +265,7 @@ export class ReservationsController {
       },
     });
 
-    if (!isPreview) {
+    {
       const tableNumber = tables.find((t) => t.id === chosenTableId)?.number ?? 0;
       const ownerEmails = restaurant.company.users
         .map((u) => u.user.email)

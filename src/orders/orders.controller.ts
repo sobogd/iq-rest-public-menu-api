@@ -15,7 +15,6 @@ const orderSchema = z.object({
   customerAddress: z.string().max(500).nullable().optional(),
   comment: z.string().max(1000).nullable().optional(),
   tableNumber: z.number().int().nullable().optional(),
-  isPreview: z.boolean().optional(),
 });
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -43,7 +42,7 @@ export class OrdersController {
   async create(@Req() req: Request, @Body() body: unknown) {
     const parsed = orderSchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException(parsed.error.issues[0]?.message || "invalid input");
-    const { slug, items, total, customerName, customerPhone, customerAddress, comment, tableNumber, isPreview } = parsed.data;
+    const { slug, items, total, customerName, customerPhone, customerAddress, comment, tableNumber } = parsed.data;
 
     const ip =
       ((req.headers["cf-connecting-ip"] as string) || "").trim() ||
@@ -51,7 +50,7 @@ export class OrdersController {
       req.socket.remoteAddress ||
       "unknown";
 
-    if (!isPreview && isRateLimited(ip, slug)) {
+    if (isRateLimited(ip, slug)) {
       throw new BadRequestException("Too many orders. Please try again later.");
     }
 
