@@ -406,3 +406,30 @@ model GoogleAdsExclusion {
   @@map("google_ads_exclusions")
 }
 
+// Multi-currency pricing for Stripe
+model CurrencyPrice {
+  id             String  @id @default(cuid())
+  currencyCode   String  @unique // EUR, PLN, BRL, etc.
+  symbol         String  // €, zł, R$, etc.
+  name           String  // Euro, Polish Zloty, etc.
+  symbolPosition String  @default("before") // "before" or "after"
+  zeroDecimal    Boolean @default(false) // CLP, COP have no cents
+
+  // Display prices
+  basicMonthly  Float
+  basicYearly   Float
+  proMonthly    Float
+  proYearly     Float
+
+  // Stripe lookup keys
+  lookupKeyBasicMonthly String
+  lookupKeyBasicYearly  String
+  lookupKeyProMonthly   String
+  lookupKeyProYearly    String
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("currency_prices")
+}
