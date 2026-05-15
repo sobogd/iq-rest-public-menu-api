@@ -49,7 +49,7 @@ export class MenuService {
         select: { id: true, name: true, translations: true, sortOrder: true },
       }),
       this.prisma.item.findMany({
-        where: { companyId: restaurant.company.id, isActive: true },
+        where: { companyId: restaurant.company.id, isActive: true, deletedAt: null },
         orderBy: { sortOrder: "asc" },
         select: {
           id: true,
@@ -64,7 +64,7 @@ export class MenuService {
         },
       }),
       this.prisma.table.findMany({
-        where: { restaurantId: restaurant.id, isActive: true },
+        where: { restaurantId: restaurant.id, isActive: true, deletedAt: null },
         orderBy: { number: "asc" },
         select: { id: true, number: true, capacity: true, zone: true, translations: true, imageUrl: true },
       }),

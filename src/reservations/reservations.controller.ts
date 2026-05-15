@@ -138,7 +138,7 @@ export class ReservationsController {
     if (!restaurant.reservationsEnabled) throw new BadRequestException("reservations_disabled");
 
     const tables = await this.prisma.table.findMany({
-      where: { restaurantId: restaurant.id, isActive: true },
+      where: { restaurantId: restaurant.id, isActive: true, deletedAt: null },
       select: { id: true, number: true, capacity: true, zone: true, translations: true, imageUrl: true },
       orderBy: { sortOrder: "asc" },
     });
@@ -227,7 +227,7 @@ export class ReservationsController {
     const status = restaurant.reservationMode === "auto" ? "confirmed" : "pending";
 
     const tables = await this.prisma.table.findMany({
-      where: { restaurantId, isActive: true, capacity: { gte: guestsCount } },
+      where: { restaurantId, isActive: true, deletedAt: null, capacity: { gte: guestsCount } },
       select: { id: true, number: true, capacity: true },
     });
 

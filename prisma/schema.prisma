@@ -208,6 +208,7 @@ model Table {
   isActive     Boolean  @default(true)
   sortOrder    Int      @default(0)
   isExample    Boolean  @default(false)
+  deletedAt    DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -277,6 +278,7 @@ model Item {
   sortOrder    Int      @default(0)
   isActive     Boolean  @default(true)
   isExample    Boolean  @default(false)
+  deletedAt    DateTime?
   categoryId   String
   companyId    String
   createdAt    DateTime @default(now())
@@ -379,6 +381,7 @@ model Order {
   tableNumber     Int?
   status          String   @default("new") // new | in_progress | completed | cancelled
   isExample       Boolean  @default(false)
+  deletedAt       DateTime?
   orderDate       DateTime @db.Date
   dailyNumber     Int
   createdAt       DateTime @default(now())
