@@ -198,6 +198,9 @@ model Table {
   zone         String?
   translations Json?    // { "en": { "zone": "..." }, "es": {...} }
   imageUrl     String?
+  // Owner-only override used by the dashboard floor map / table grid.
+  // Public menu reads imageUrl, never color.
+  color        String?
   // Floor-map position in percent (0-100); null = unplaced
   x            Float?
   y            Float?
