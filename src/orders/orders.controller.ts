@@ -2,6 +2,7 @@ import { BadRequestException, Body, Controller, HttpCode, HttpStatus, NotFoundEx
 import type { Request } from "express";
 import { z } from "zod";
 import { PrismaService } from "../prisma/prisma.service";
+import { OrdersNotifierService } from "./orders-notifier.service";
 
 const orderSchema = z.object({
   slug: z.string().min(1),
@@ -35,7 +36,10 @@ function isRateLimited(ip: string, slug: string): boolean {
 
 @Controller("public/orders")
 export class OrdersController {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifier: OrdersNotifierService,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.OK)
@@ -79,7 +83,7 @@ export class OrdersController {
         });
         const dailyNumber = (last?.dailyNumber ?? 0) + 1;
         try {
-          await this.prisma.order.create({
+          const created = await this.prisma.order.create({
             data: {
               restaurantId: restaurant.id,
               companyId: restaurant.companyId,
@@ -96,6 +100,10 @@ export class OrdersController {
               dailyNumber,
             },
           });
+          // Fire-and-forget — dashboard SSE clients pick this up via Postgres
+          // NOTIFY listened to by dashboard-api. Failure to notify never
+          // blocks the diner's order placement.
+          void this.notifier.publishCreated(restaurant.id, created);
           break;
         } catch (err: unknown) {
           if (
