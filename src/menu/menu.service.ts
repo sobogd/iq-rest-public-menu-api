@@ -17,6 +17,7 @@ export class MenuService {
         currency: true,
         source: true,
         hideTitle: true,
+        menuLayout: true,
         address: true,
         phone: true,
         instagram: true,
@@ -46,7 +47,7 @@ export class MenuService {
       this.prisma.category.findMany({
         where: { companyId: restaurant.company.id, isActive: true },
         orderBy: { sortOrder: "asc" },
-        select: { id: true, name: true, translations: true, sortOrder: true },
+        select: { id: true, name: true, translations: true, sortOrder: true, isGroup: true, parentId: true },
       }),
       this.prisma.item.findMany({
         where: { companyId: restaurant.company.id, isActive: true, deletedAt: null },
@@ -59,6 +60,7 @@ export class MenuService {
           price: true,
           imageUrl: true,
           allergens: true,
+          diets: true,
           translations: true,
           sortOrder: true,
         },
