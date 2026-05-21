@@ -45,12 +45,12 @@ export class MenuService {
 
     const [categories, items, tables] = await Promise.all([
       this.prisma.category.findMany({
-        where: { companyId: restaurant.company.id, isActive: true },
+        where: { restaurantId: restaurant.id, isActive: true },
         orderBy: { sortOrder: "asc" },
         select: { id: true, name: true, translations: true, sortOrder: true, isGroup: true, parentId: true },
       }),
       this.prisma.item.findMany({
-        where: { companyId: restaurant.company.id, isActive: true, deletedAt: null },
+        where: { restaurantId: restaurant.id, isActive: true, deletedAt: null },
         orderBy: { sortOrder: "asc" },
         select: {
           id: true,
