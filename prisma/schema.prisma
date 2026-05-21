@@ -186,6 +186,9 @@ model Restaurant {
   tables       Table[]
   reservations Reservation[]
   orders       Order[]
+  categories   Category[]
+  items        Item[]
+  pageViews    PageView[]
 
   @@index([companyId])
   @@index([slug])
@@ -259,16 +262,20 @@ model Category {
   parent       Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
   children     Category[] @relation("CategoryTree")
   companyId    String
+  restaurantId String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  items   Item[]
+  company    Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  items      Item[]
 
   @@index([companyId])
   @@index([companyId, sortOrder])
   @@index([companyId, isActive, sortOrder])
   @@index([companyId, parentId, sortOrder])
+  @@index([restaurantId])
+  @@index([restaurantId, sortOrder])
   @@map("categories")
 }
 
@@ -289,17 +296,21 @@ model Item {
   deletedAt    DateTime?
   categoryId   String
   companyId    String
+  restaurantId String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  category   Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  company    Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   @@index([companyId])
   @@index([categoryId])
   @@index([companyId, categoryId])
   @@index([categoryId, sortOrder])
   @@index([companyId, isExample])
+  @@index([restaurantId])
+  @@index([restaurantId, categoryId])
   @@map("items")
 }
 
@@ -318,21 +329,24 @@ model UserCompany {
 }
 
 model PageView {
-  id        String   @id @default(cuid())
-  companyId String
-  sessionId String
-  page      String   // 'home' | 'contacts' | 'language' | 'menu'
-  language  String
-  referrer  String?
-  userAgent String?
-  ip        String?
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  companyId    String
+  restaurantId String
+  sessionId    String
+  page         String   // 'home' | 'contacts' | 'language' | 'menu'
+  language     String
+  referrer     String?
+  userAgent    String?
+  ip           String?
+  createdAt    DateTime @default(now())
 
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company    Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   @@index([companyId, createdAt])
   @@index([companyId, sessionId])
   @@index([createdAt])
+  @@index([restaurantId, createdAt])
   @@map("page_views")
 }
 

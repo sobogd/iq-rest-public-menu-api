@@ -34,7 +34,7 @@ export class AnalyticsController {
 
     const restaurant = await this.prisma.restaurant.findFirst({
       where: { slug },
-      select: { companyId: true },
+      select: { id: true, companyId: true },
     });
     if (!restaurant) return { success: false };
 
@@ -47,6 +47,7 @@ export class AnalyticsController {
     await this.prisma.pageView.create({
       data: {
         companyId: restaurant.companyId,
+        restaurantId: restaurant.id,
         sessionId,
         page,
         language,
