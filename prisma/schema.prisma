@@ -294,13 +294,15 @@ model Item {
   isActive     Boolean  @default(true)
   isExample    Boolean  @default(false)
   deletedAt    DateTime?
-  categoryId   String
+  // Nullable + SetNull: deleting a category orphans its items (categoryId ->
+  // null) instead of cascade-removing them. Kept in sync with dashboard-api.
+  categoryId   String?
   companyId    String
   restaurantId String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  category   Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category   Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   company    Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 

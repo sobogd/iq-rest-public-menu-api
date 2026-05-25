@@ -50,7 +50,10 @@ export class MenuService {
         select: { id: true, name: true, translations: true, sortOrder: true, isGroup: true, parentId: true },
       }),
       this.prisma.item.findMany({
-        where: { restaurantId: restaurant.id, isActive: true, deletedAt: null },
+        // categoryId not null: orphaned items (their category was deleted) are
+        // never shown to diners — they live only in the owner dashboard's
+        // "No category" bucket until re-filed or removed.
+        where: { restaurantId: restaurant.id, isActive: true, deletedAt: null, categoryId: { not: null } },
         orderBy: { sortOrder: "asc" },
         select: {
           id: true,
