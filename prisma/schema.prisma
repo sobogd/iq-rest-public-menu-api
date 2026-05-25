@@ -261,6 +261,8 @@ model Category {
   parentId     String?
   parent       Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
   children     Category[] @relation("CategoryTree")
+  // Soft-delete marker (synced with dashboard-api).
+  deletedAt    DateTime?
   companyId    String
   restaurantId String
   createdAt    DateTime @default(now())
@@ -276,6 +278,7 @@ model Category {
   @@index([companyId, parentId, sortOrder])
   @@index([restaurantId])
   @@index([restaurantId, sortOrder])
+  @@index([restaurantId, deletedAt])
   @@map("categories")
 }
 

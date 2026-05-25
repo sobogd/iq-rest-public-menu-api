@@ -45,15 +45,14 @@ export class MenuService {
 
     const [categories, items, tables] = await Promise.all([
       this.prisma.category.findMany({
-        where: { restaurantId: restaurant.id, isActive: true },
+        where: { restaurantId: restaurant.id, isActive: true, deletedAt: null },
         orderBy: { sortOrder: "asc" },
         select: { id: true, name: true, translations: true, sortOrder: true, isGroup: true, parentId: true },
       }),
       this.prisma.item.findMany({
-        // categoryId not null: orphaned items (their category was deleted) are
-        // never shown to diners — they live only in the owner dashboard's
-        // "No category" bucket until re-filed or removed.
-        where: { restaurantId: restaurant.id, isActive: true, deletedAt: null, categoryId: { not: null } },
+        // Only items in a live (non-deleted) category reach diners. Covers both
+        // soft-deleted categories and any orphaned items.
+        where: { restaurantId: restaurant.id, isActive: true, deletedAt: null, category: { deletedAt: null } },
         orderBy: { sortOrder: "asc" },
         select: {
           id: true,
