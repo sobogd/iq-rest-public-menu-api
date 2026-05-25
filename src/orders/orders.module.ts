@@ -5,5 +5,6 @@ import { OrdersNotifierService } from "./orders-notifier.service";
 @Module({
   controllers: [OrdersController],
   providers: [OrdersNotifierService],
+  exports: [OrdersNotifierService],
 })
 export class OrdersModule {}

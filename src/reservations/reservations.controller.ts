@@ -2,6 +2,7 @@ import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Logge
 import { z } from "zod";
 import { PrismaService } from "../prisma/prisma.service";
 import { MailService } from "../mail/mail.service";
+import { OrdersNotifierService } from "../orders/orders-notifier.service";
 
 const reservationSchema = z.object({
   restaurantId: z.string().min(1),
@@ -110,7 +111,11 @@ function getScheduleDay(
 @Controller("public/reservations")
 export class ReservationsController {
   private readonly logger = new Logger(ReservationsController.name);
-  constructor(private readonly prisma: PrismaService, private readonly mail: MailService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mail: MailService,
+    private readonly notifier: OrdersNotifierService,
+  ) {}
 
   @Get("availability")
   async availability(
@@ -296,6 +301,10 @@ export class ReservationsController {
           .catch((err) => this.logger.warn(`owner email failed: ${err?.message || err}`));
       }
     }
+
+    // Fire-and-forget SSE notify so a paired RESERVATION kiosk shows the
+    // new booking live. Never blocks or fails the diner's request.
+    void this.notifier.publishBookingCreated(restaurantId, reservation);
 
     return reservation;
   }

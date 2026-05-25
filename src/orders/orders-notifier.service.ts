@@ -43,4 +43,23 @@ export class OrdersNotifierService implements OnModuleDestroy {
       this.logger.warn(`pg_notify failed: ${(e as Error).message}`);
     }
   }
+
+  // Same channel, distinct action — a new diner reservation. Paired
+  // RESERVATION kiosks pick it up via dashboard-api's SSE listener.
+  async publishBookingCreated(restaurantId: string, booking: unknown): Promise<void> {
+    if (!this.pool) return;
+    const payload = JSON.stringify({ action: "booking-created", restaurantId, booking });
+    const safe =
+      payload.length > 7800
+        ? JSON.stringify({ action: "booking-created", restaurantId })
+        : payload;
+    try {
+      await this.pool.query(`SELECT pg_notify($1, $2)`, [
+        OrdersNotifierService.CHANNEL,
+        safe,
+      ]);
+    } catch (e) {
+      this.logger.warn(`booking pg_notify failed: ${(e as Error).message}`);
+    }
+  }
 }
