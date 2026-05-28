@@ -62,7 +62,6 @@ export class OrdersController {
       where: { slug },
       select: {
         id: true,
-        companyId: true,
         ordersEnabled: true,
         orderMode: true,
         currency: true,
@@ -86,7 +85,6 @@ export class OrdersController {
           const created = await this.prisma.order.create({
             data: {
               restaurantId: restaurant.id,
-              companyId: restaurant.companyId,
               items: items as object[],
               total: total ?? 0,
               currency: restaurant.currency,

@@ -16,20 +16,18 @@ model User {
   email           String    @unique
   otp             String?
   otpExpiresAt    DateTime?
-  otpAttempts     Int       @default(0) // failed OTP verification attempts
-  sessionToken    String?   // hashed session token for validation
-  preferredLocale String?   // last locale the user actively used in the dashboard; drives email language
-  // Pre-signup context captured before OTP verify (cleared on first verify).
-  // Used to seed a template restaurant for new accounts that came through the create-flow.
+  otpAttempts     Int       @default(0)
+  sessionToken    String?
+  preferredLocale String?
   pendingCuisine        String?
   pendingRestaurantName String?
   pendingCurrency       String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  companies       UserCompany[]
   supportMessages SupportMessage[]
   sessions        Session[]
+  restaurantUsers RestaurantUser[]
 
   @@map("users")
 }
@@ -47,53 +45,6 @@ model Session {
 
   @@index([userId])
   @@map("sessions")
-}
-
-model Company {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Stripe
-  stripeCustomerId     String? @unique
-  stripeSubscriptionId String? @unique
-
-  // Subscription
-  plan               Plan               @default(FREE)
-  billingCycle       BillingCycle?
-  subscriptionStatus SubscriptionStatus @default(INACTIVE)
-  currentPeriodEnd   DateTime?
-  paymentProcessing  Boolean            @default(false)
-
-  // Trial
-  trialEndsAt DateTime? // null = old user (pre-trial), set = new user with 14-day trial
-
-  // Onboarding
-  onboardingStep Int @default(3) // 3 = onboarding complete (legacy field)
-
-  // Email campaigns
-  emailsSent       Json?    // e.g. { "welcome": "2026-02-16T...", "inactive_7d": "2026-02-20T..." }
-  emailUnsubscribed Boolean @default(false)
-
-  // Limits
-  scanLimit  Int @default(320)
-  orderLimit Int @default(10)
-
-  // Upsell
-  upsellShownAt DateTime?
-
-  // Admin
-  reminderSentAt DateTime?
-
-  users           UserCompany[]
-  categories      Category[]
-  items           Item[]
-  restaurants     Restaurant[]
-  pageViews       PageView[]
-  supportMessages SupportMessage[]
-
-  @@map("companies")
 }
 
 enum Plan {
@@ -123,7 +74,6 @@ model Restaurant {
   slug            String?
   currency        String   @default("EUR")
   source          String?
-  // "image" | "video"; null when source is unset
   backgroundType  String?
   accentColor     String   @default("#ED3A3A")
   address         String?
@@ -138,61 +88,72 @@ model Restaurant {
   hideTitle       Boolean  @default(false)
   menuLayout      String   @default("flat")
   paymentMethods  String[] @default(["cash", "card"])
-  companyId       String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  // Checklist flags (set once on first user action)
   checklistMenuEdited      Boolean @default(false)
   checklistContactsSaved   Boolean @default(false)
   checklistBrandCustomized Boolean @default(false)
   startedFromScratch       Boolean @default(false)
   fromScanner              Boolean @default(false)
-
-  // UI banners (per-restaurant dismissals)
   scanBannerDismissed      Boolean @default(false)
 
-  // Free AI trials
   freeTranslationsLeft      Int @default(5)
   freeImageGenerationsLeft  Int @default(2)
-
-  // Monthly AI usage counters (reset manually or via cron)
   translationsUsed      Int @default(0)
   imageGenerationsUsed  Int @default(0)
   imageStylizationsUsed Int @default(0)
 
-  // Reservation settings
   reservationsEnabled    Boolean @default(false)
-  reservationMode        String  @default("manual") // "auto" | "manual"
+  reservationMode        String  @default("manual")
   reservationSlotMinutes Int     @default(90)
   workingHoursStart      String  @default("10:00")
   workingHoursEnd        String  @default("22:00")
-  // Per-day schedule. Array length 7, index 0=Mon ... 6=Sun.
-  // [{ closed, from, to, lunchFrom, lunchTo }]. Null = legacy single-window
-  // mode driven by workingHoursStart/End.
   reservationSchedule    Json?
-  // IANA timezone identifier (e.g. "Europe/Rome"). Mirrored from
-  // dashboard-api; migration created there. Used by the booking flow to
-  // compute "is slot in the past" against the restaurant's local clock
-  // instead of the server's UTC clock.
   timezone               String  @default("UTC")
   ordersEnabled          Boolean @default(false)
   orderNameEnabled       Boolean @default(true)
   orderPhoneEnabled      Boolean @default(false)
   orderAddressEnabled    Boolean @default(false)
-  orderMode              String  @default("internal") // "internal" | "whatsapp" | "both"
+  orderMode              String  @default("internal")
 
-  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  tables       Table[]
-  reservations Reservation[]
-  orders       Order[]
-  categories   Category[]
-  items        Item[]
-  pageViews    PageView[]
+  // Per-restaurant billing (2026-05-28). Trial set only on the user's first
+  // restaurant; subsequent restaurants start FREE without trial.
+  plan                  Plan?
+  billingCycle          BillingCycle?
+  subscriptionStatus    SubscriptionStatus  @default(INACTIVE)
+  currentPeriodEnd      DateTime?
+  paymentProcessing     Boolean             @default(false)
+  stripeSubscriptionId  String?             @unique
+  trialEndsAt           DateTime?
 
-  @@index([companyId])
+  tables          Table[]
+  reservations    Reservation[]
+  orders          Order[]
+  categories      Category[]
+  items           Item[]
+  pageViews       PageView[]
+  restaurantUsers RestaurantUser[]
+  supportMessages SupportMessage[]
+
   @@index([slug])
   @@map("restaurants")
+}
+
+model RestaurantUser {
+  id           String   @id @default(cuid())
+  restaurantId String
+  userId       String
+  addedAt      DateTime @default(now())
+  addedBy      String?
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([restaurantId, userId])
+  @@index([userId])
+  @@index([restaurantId])
+  @@map("restaurant_users")
 }
 
 model Table {
@@ -201,13 +162,10 @@ model Table {
   number       Int
   capacity     Int
   zone         String?
-  description  String?  // Free-form note shown next to the name on the table form
-  translations Json?    // { "en": { "zone": "...", "description": "..." }, "es": {...} }
+  description  String?
+  translations Json?
   imageUrl     String?
-  // Owner-only override used by the dashboard floor map / table grid.
-  // Public menu reads imageUrl, never color.
   color        String?
-  // Floor-map position in percent (0-100); null = unplaced
   x            Float?
   y            Float?
   isActive     Boolean  @default(true)
@@ -230,13 +188,13 @@ model Reservation {
   restaurantId String
   tableId      String
   date         DateTime @db.Date
-  startTime    String   // "19:00"
-  duration     Int      // minutes
+  startTime    String
+  duration     Int
   guestName    String
   guestEmail   String
   guestPhone   String?
   guestsCount  Int
-  status       String   @default("pending") // pending, confirmed, cancelled, completed
+  status       String   @default("pending")
   notes        String?
   isExample    Boolean  @default(false)
   createdAt    DateTime @default(now())
@@ -252,30 +210,23 @@ model Reservation {
 }
 
 model Category {
-  id           String   @id @default(cuid())
+  id           String     @id @default(cuid())
   name         String
-  translations Json?    // { "en": { "name": "..." }, "es": {...} }
-  sortOrder    Int      @default(0)
-  isActive     Boolean  @default(true)
-  isGroup      Boolean  @default(false)
+  translations Json?
+  sortOrder    Int        @default(0)
+  isActive     Boolean    @default(true)
+  isGroup      Boolean    @default(false)
   parentId     String?
   parent       Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
   children     Category[] @relation("CategoryTree")
-  // Soft-delete marker (synced with dashboard-api).
   deletedAt    DateTime?
-  companyId    String
   restaurantId String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-  company    Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   items      Item[]
 
-  @@index([companyId])
-  @@index([companyId, sortOrder])
-  @@index([companyId, isActive, sortOrder])
-  @@index([companyId, parentId, sortOrder])
   @@index([restaurantId])
   @@index([restaurantId, sortOrder])
   @@index([restaurantId, deletedAt])
@@ -286,110 +237,84 @@ model Item {
   id           String   @id @default(cuid())
   name         String
   description  String?
-  translations Json?    // { "en": { "name": "...", "description": "..." }, "es": {...} }
+  translations Json?
   price        Decimal  @db.Decimal(10, 2)
   imageUrl     String?
-  allergens    String[] @default([]) // Array of allergen codes: gluten, dairy, eggs, etc.
-  diets        String[] @default([]) // Array of diet/lifestyle tags: vegan, vegetarian, gluten_free, etc.
-  // Variant groups: [{ id, name, translations, type: "single"|"multi", required, variants: [{ id, name, translations, priceDelta }] }]
+  allergens    String[] @default([])
+  diets        String[] @default([])
   options      Json?
   sortOrder    Int      @default(0)
   isActive     Boolean  @default(true)
   isExample    Boolean  @default(false)
   deletedAt    DateTime?
-  // Nullable + SetNull: deleting a category orphans its items (categoryId ->
-  // null) instead of cascade-removing them. Kept in sync with dashboard-api.
   categoryId   String?
-  companyId    String
   restaurantId String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   category   Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  company    Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
-  @@index([companyId])
   @@index([categoryId])
-  @@index([companyId, categoryId])
   @@index([categoryId, sortOrder])
-  @@index([companyId, isExample])
   @@index([restaurantId])
   @@index([restaurantId, categoryId])
   @@map("items")
 }
 
-model UserCompany {
-  id        String   @id @default(cuid())
-  userId    String
-  companyId String
-  role      String   @default("owner")
-  createdAt DateTime @default(now())
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, companyId])
-  @@map("users_companies")
-}
-
 model PageView {
   id           String   @id @default(cuid())
-  companyId    String
   restaurantId String
   sessionId    String
-  page         String   // 'home' | 'contacts' | 'language' | 'menu'
+  page         String
   language     String
   referrer     String?
   userAgent    String?
   ip           String?
   createdAt    DateTime @default(now())
 
-  company    Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
-  @@index([companyId, createdAt])
-  @@index([companyId, sessionId])
   @@index([createdAt])
   @@index([restaurantId, createdAt])
   @@map("page_views")
 }
 
 model SupportMessage {
-  id        String   @id @default(cuid())
-  companyId String
-  userId    String
-  message   String   @db.Text
-  isAdmin   Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  restaurantId String
+  userId       String
+  message      String   @db.Text
+  isAdmin      Boolean  @default(false)
+  createdAt    DateTime @default(now())
 
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([companyId, createdAt])
+  @@index([restaurantId, createdAt])
   @@map("support_messages")
 }
 
-/// Unified analytics. Replaces the old PulseEvent + Session + AnalyticsEvent.
-/// Anonymous by default (event + at + country + region + device + platform).
-/// gclid is set only by SSR (server-pulse from /app/<locale>/page.tsx on landing
-/// arrival with ?gclid=...). companyId is attached server-side from the auth
-/// cookie when the request comes from a logged-in user.
 model UsageEvent {
-  id        String   @id @default(cuid())
-  at        DateTime @default(now())
-  event     String
-  country   String   @default("XX")
-  region    String   @default("")
-  device    String?  // 'mobile' / 'tablet' / 'desktop'
-  platform  String?  // 'ios' / 'android' / 'windows' / 'macos' / 'linux' / 'other'
-  gclid     String?  // SSR-only — landing page on gclid arrival
-  ad_params String?  // JSON: { kw, term, campaign } from ValueTrack params
-  companyId String?  // server-side from iqr_session cookie when logged in
+  id           String   @id @default(cuid())
+  at           DateTime @default(now())
+  event        String
+  country      String   @default("XX")
+  region       String   @default("")
+  device       String?
+  platform     String?
+  gclid        String?
+  ad_params    String?
+  userId       String?
+  restaurantId String?
+  ip           String?
+  is_google_ads   Boolean  @default(false)
+  is_facebook_ads Boolean  @default(false)
+  is_search       Boolean  @default(false)
+  fbSentEvents    String[] @default([])
 
   @@index([at])
   @@index([event, at])
-  @@index([companyId, at])
   @@index([gclid])
   @@map("usage_events")
 }
@@ -397,8 +322,7 @@ model UsageEvent {
 model Order {
   id              String   @id @default(cuid())
   restaurantId    String
-  companyId       String
-  items           Json     // [{ id, name, qty, price }]
+  items           Json
   total           Decimal  @db.Decimal(10, 2)
   currency        String   @default("EUR")
   customerName    String?
@@ -406,7 +330,7 @@ model Order {
   customerAddress String?
   comment         String?
   tableNumber     Int?
-  status          String   @default("new") // new | in_progress | completed | cancelled
+  status          String   @default("new")
   statusBeforeClose String?
   paymentMethodId String?
   isExample       Boolean  @default(false)
@@ -419,19 +343,6 @@ model Order {
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   @@unique([restaurantId, orderDate, dailyNumber])
-  @@index([companyId, status])
-  @@index([companyId, createdAt])
   @@index([restaurantId, createdAt])
   @@map("orders")
 }
-
-model GoogleAdsExclusion {
-  id        String   @id @default(cuid())
-  keyword   String
-  matchType String
-  createdAt DateTime @default(now())
-
-  @@unique([keyword, matchType])
-  @@map("google_ads_exclusions")
-}
-

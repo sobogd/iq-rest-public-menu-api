@@ -36,9 +36,11 @@ export class MenuService {
         x: true,
         y: true,
         googlePlaceId: true,
-        company: {
-          select: { id: true, plan: true, subscriptionStatus: true, trialEndsAt: true },
-        },
+        // Per-restaurant billing — trial / plan come straight off the
+        // restaurant now (no Company hop).
+        plan: true,
+        subscriptionStatus: true,
+        trialEndsAt: true,
       },
     });
     if (!restaurant) throw new NotFoundException("restaurant not found");

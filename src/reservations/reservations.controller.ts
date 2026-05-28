@@ -208,6 +208,7 @@ export class ReservationsController {
     if (!parsed.success) throw new BadRequestException(parsed.error.issues[0]?.message || "invalid input");
     const { restaurantId, tableId, date, startTime, guestName, guestEmail, guestPhone, guestsCount, notes, locale } = parsed.data;
 
+    // Owner emails come from RestaurantUser (the flat-access model).
     const restaurant = await this.prisma.restaurant.findUnique({
       where: { id: restaurantId },
       select: {
@@ -217,11 +218,7 @@ export class ReservationsController {
         reservationsEnabled: true,
         reservationSlotMinutes: true,
         reservationMode: true,
-        company: {
-          select: {
-            users: { select: { user: { select: { email: true } } } },
-          },
-        },
+        restaurantUsers: { select: { user: { select: { email: true } } } },
       },
     });
     if (!restaurant) throw new NotFoundException("not_found");
@@ -272,8 +269,8 @@ export class ReservationsController {
 
     {
       const tableNumber = tables.find((t) => t.id === chosenTableId)?.number ?? 0;
-      const ownerEmails = restaurant.company.users
-        .map((u) => u.user.email)
+      const ownerEmails = restaurant.restaurantUsers
+        .map((ru) => ru.user.email)
         .filter((e): e is string => !!e);
       const lang = locale || restaurant.defaultLanguage || "en";
       const baseParams = {
