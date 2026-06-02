@@ -19,6 +19,7 @@ export class MenuService {
         hideTitle: true,
         menuLayout: true,
         titleScale: true,
+        languageSwitcher: true,
         address: true,
         phone: true,
         instagram: true,
