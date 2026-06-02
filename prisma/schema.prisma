@@ -170,7 +170,6 @@ model Table {
   y            Float?
   isActive     Boolean  @default(true)
   sortOrder    Int      @default(0)
-  isExample    Boolean  @default(false)
   deletedAt    DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -196,7 +195,6 @@ model Reservation {
   guestsCount  Int
   status       String   @default("pending")
   notes        String?
-  isExample    Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -245,7 +243,6 @@ model Item {
   options      Json?
   sortOrder    Int      @default(0)
   isActive     Boolean  @default(true)
-  isExample    Boolean  @default(false)
   deletedAt    DateTime?
   categoryId   String?
   restaurantId String
@@ -333,7 +330,6 @@ model Order {
   status          String   @default("new")
   statusBeforeClose String?
   paymentMethodId String?
-  isExample       Boolean  @default(false)
   deletedAt       DateTime?
   orderDate       DateTime @db.Date
   dailyNumber     Int
