@@ -87,6 +87,7 @@ model Restaurant {
   defaultLanguage String   @default("en")
   hideTitle       Boolean  @default(false)
   menuLayout      String   @default("flat")
+  titleScale      String   @default("large")
   paymentMethods  String[] @default(["cash", "card"])
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
